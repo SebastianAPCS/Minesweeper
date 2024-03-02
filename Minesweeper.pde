@@ -1,108 +1,76 @@
-import de.bezier.guido.*;
-//Declare and initialize constants NUM_ROWS and NUM_COLS = 20
-private MSButton[][] buttons; //2d array of minesweeper buttons
-private ArrayList <MSButton> mines; //ArrayList of just the minesweeper buttons that are mined
+Matrix3 transform;
+float[] angles = new float[2];
 
-void setup ()
-{
-    size(400, 400);
-    textAlign(CENTER,CENTER);
-    
-    // make the manager
-    Interactive.make( this );
-    
-    //your code to initialize buttons goes here
-    
-    
-    
-    setMines();
-}
-public void setMines()
-{
-    //your code
+public void setup() {
+  size(800, 600);
 }
 
-public void draw ()
-{
-    background( 0 );
-    if(isWon() == true)
-        displayWinningMessage();
+public void draw() {
+  background(0);
+  translate(width / 2, height / 2);
+  
+  
+  updateTransform();
 }
-public boolean isWon()
-{
-    //your code here
-    return false;
+
+void updateTransform() {
+  float heading = radians(angles[0]);
+  float pitch = radians(angles[1]);
+  
+  Matrix3 headingTransform = new Matrix3(new double[]{
+    cos(heading), 0, -sin(heading),
+    0, 1, 0,
+    sin(heading), 0, cos(heading)
+  });
+  
+  Matrix3 pitchTransform = new Matrix3(new double[]{
+    1, 0, 0,
+    0, cos(pitch), sin(pitch),
+    0, -sin(pitch), cos(pitch)
+  });
+  
+  transform = headingTransform.multiply(pitchTransform);
 }
-public void displayLosingMessage()
-{
-    //your code here
+
+class Vertex {
+  double x;
+  double y;
+  double z;
+  
+  Vertex(double x, double y, double z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
 }
-public void displayWinningMessage()
-{
-    //your code here
-}
-public boolean isValid(int r, int c)
-{
-    //your code here
-    return false;
-}
-public int countMines(int row, int col)
-{
-    int numMines = 0;
-    //your code here
-    return numMines;
-}
-public class MSButton
-{
-    private int myRow, myCol;
-    private float x,y, width, height;
-    private boolean clicked, flagged;
-    private String myLabel;
+
+class Matrix3 {
+  double[] values;
+  
+  Matrix3(double[] values) {
+    this.values = values;
+  }
+  
+  Matrix3 multiply(Matrix3 other) {
+    double[] result = new double[9];
     
-    public MSButton ( int row, int col )
-    {
-        // width = 400/NUM_COLS;
-        // height = 400/NUM_ROWS;
-        myRow = row;
-        myCol = col; 
-        x = myCol*width;
-        y = myRow*height;
-        myLabel = "";
-        flagged = clicked = false;
-        Interactive.add( this ); // register it with the manager
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 3; col++) {
+        for (int i = 0; i < 3; i++) {
+          result[row * 3 + col] +=
+            this.values[row * 3 + i] * other.values[row * 3 + i];
+        }
+      }
     }
-
-    // called by manager
-    public void mousePressed () 
-    {
-        clicked = true;
-        //your code here
-    }
-    public void draw () 
-    {    
-        if (flagged)
-            fill(0);
-        // else if( clicked && mines.contains(this) ) 
-        //     fill(255,0,0);
-        else if(clicked)
-            fill( 200 );
-        else 
-            fill( 100 );
-
-        rect(x, y, width, height);
-        fill(0);
-        text(myLabel,x+width/2,y+height/2);
-    }
-    public void setLabel(String newLabel)
-    {
-        myLabel = newLabel;
-    }
-    public void setLabel(int newLabel)
-    {
-        myLabel = ""+ newLabel;
-    }
-    public boolean isFlagged()
-    {
-        return flagged;
-    }
+    
+    return new Matrix3(result);
+  }
+  
+  Vertex transform(Vertex vinput) {
+    return new Vertex(
+      vinput.x * values[0] + vinput.y * values[3] + vinput.z * values[6],
+      vinput.x * values[1] + vinput.y * values[4] + vinput.z * values[7],
+      vinput.x * values[2] + vinput.y * values[5] + vinput.z * values[8]
+    );
+  }
 }
