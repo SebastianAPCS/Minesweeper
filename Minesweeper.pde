@@ -32,7 +32,7 @@ public void draw() {
   
   ArrayList<Box> overlappingBoxes = new ArrayList<Box>();
   
-  double closestZ = Double.NEGATIVE_INFINITY;
+  double closestZ = -999999999; // fuck this shit bro
   
   if (mousePressed == false) {
     isMouseDragged = false;
