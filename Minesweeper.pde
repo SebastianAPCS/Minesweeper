@@ -1,4 +1,4 @@
-import processing.opengl.*;
+//import processing.opengl.*;
 
 Matrix3 transform;
 float[] angles = new float[2];
@@ -12,7 +12,7 @@ boolean minesSet = false;
 boolean[] hasWon = new boolean[]{false, false};
 
 public void setup() {
-  size(1000, 750, OPENGL);
+  size(1000, 750);
   
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
