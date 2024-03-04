@@ -70,9 +70,7 @@ void updateTransform() {
 }
 
 class Vertex {
-  double x;
-  double y;
-  double z;
+  double x, y, z;
   
   Vertex(double x, double y, double z) {
     this.x = x;
@@ -111,14 +109,7 @@ class Quadrilateral {
 }
 
 class Cube {
-  Vertex v1;
-  Vertex v2;
-  Vertex v3;
-  Vertex v4;
-  Vertex v5;
-  Vertex v6;
-  Vertex v7;
-  Vertex v8;
+  Vertex v1, v2, v3, v4, v5, v6, v7, v8;
   
   Cube(Vertex v1, Vertex v2, Vertex v3, Vertex v4, Vertex v5, Vertex v6, Vertex v7, Vertex v8) {
     this.v1 = v1;
@@ -146,7 +137,7 @@ class Cube {
 }
 
 class Box extends Cube {
-  ArrayList<Quadrilateral> faces = new ArrayList<>();
+  ArrayList <Quadrilateral> faces = new ArrayList<>();
   int r = 255, g = 255, b = 255; // line color
   int fr = 211, fg = 211, fb = 211; // face color
   int ft = 100; // face transparency
