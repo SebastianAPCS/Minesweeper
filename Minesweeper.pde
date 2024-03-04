@@ -181,7 +181,6 @@ void setMines() {
 
 void endGame(boolean hasWon) {
   noLoop();
-  delay(500);
   
   if (!hasWon) {
     background(0);
@@ -200,7 +199,6 @@ void endGame(boolean hasWon) {
       }
     }
     
-    delay(500);
     fill(255);
     // textSize(64);
     textFont(createFont("Verdana-Bold", 64)); 
