@@ -1,4 +1,4 @@
-// import processing.opengl.*;
+import processing.opengl.*;
 
 Matrix3 transform;
 float[] angles = new float[2];
@@ -9,9 +9,10 @@ Box highlightedBox = null;
 
 boolean isMouseDragged = false;
 boolean minesSet = false;
+boolean[] hasWon = new boolean[]{false, false};
 
 public void setup() {
-  size(1000, 750);
+  size(1000, 750, OPENGL);
   
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
@@ -31,8 +32,20 @@ public void draw() {
   translate(width / 2, height / 2);
   
   ArrayList<Box> overlappingBoxes = new ArrayList<Box>();
-  
   double closestZ = -999999999; // fuck this shit bro
+  
+  int mineSum = 0;
+  int notClickedSum = 0;
+  for (int i = 0; i < 5; i++) {
+    for (int j = 0; j < 5; j++) {
+      for (int k = 0; k < 5; k++) {
+        if (boxes[i][j][k].isMine) mineSum ++;
+        if (!boxes[i][j][k].isClicked) notClickedSum ++;
+      }
+    }
+  }
+  
+  if (mineSum == notClickedSum) endGame(true);
   
   if (mousePressed == false) {
     isMouseDragged = false;
@@ -104,17 +117,19 @@ public void draw() {
 }
 
 void mouseDragged() {
-  isMouseDragged = true;
-  
-  float sensitivity = 0.1;
-  float yIncrement = sensitivity * (pmouseY - mouseY);
-  float xIncrement = sensitivity * (mouseX - pmouseX);
-  
-  angles[0] += xIncrement;
-  angles[1] += yIncrement;
-  
-  redraw();
-  updateTransform();
+  if (!hasWon[0]) {
+    isMouseDragged = true;
+    
+    float sensitivity = 0.1;
+    float yIncrement = sensitivity * (pmouseY - mouseY);
+    float xIncrement = sensitivity * (mouseX - pmouseX);
+    
+    angles[0] += xIncrement;
+    angles[1] += yIncrement;
+    
+    redraw();
+    updateTransform();
+  }
 }
 
 void mousePressed() {
@@ -128,15 +143,13 @@ void mousePressed() {
       if (highlightedBox.isMine) {
         endGame(false);
       } else {
-        highlightedBox.isClicked = true;
-        
         highlightedBox.minesNearby = highlightedBox.numMinesNearby();
         
         int i = highlightedBox.i;
         int j = highlightedBox.j;
         int k = highlightedBox.k;
         
-        // revealSurroundingBoxes(i, j, k);
+        revealSurroundingBoxes(i, j, k);
       }
     }
   }
@@ -144,6 +157,10 @@ void mousePressed() {
 
 boolean isBoxValid(int i, int j, int k) {
   return i <= 4 && i >= 0 && j <= 4 && j >= 0 && k <= 4 && k >= 0 && !boxes[i][j][k].isClicked;
+}
+
+boolean isBoxValid2(int i, int j, int k) {
+  return i <= 4 && i >= 0 && j <= 4 && j >= 0 && k <= 4 && k >= 0;
 }
 
 void updateTransform() {
@@ -169,7 +186,7 @@ void setMines() {
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       for (int k = 0; k < 5; k++) {
-        if (!boxes[i][j][k].isHighlighted && (Math.random() > 0.9)) {
+        if (!boxes[i][j][k].isHighlighted && (Math.random() > 0.85)) {
           boxes[i][j][k].isMine = true;
         }
       }
@@ -206,21 +223,21 @@ void endGame(boolean hasWon) {
     
     // if (mousePressed || keyPressed) exit();
   } else if (hasWon) {
-    delay(500);
     fill(255);
     // textSize(64);
     textFont(createFont("Verdana-Bold", 64)); 
     text("GAME WON", -175, 0);
+    textFont(createFont("Verdana-Bold", 15));
   }
 }
 
 void revealSurroundingBoxes(int x, int y, int z) {
-  if (!isBoxValid(x, y, z)) return;
+  if (!isBoxValid2(x, y, z)) return;
 
   Box currentBox = boxes[x][y][z];
   
+  if (currentBox.isClicked) return;
   currentBox.isClicked = true;
-  println(x + ", " + y + ", " + z);
   
   int nearbyMines = currentBox.numMinesNearby();
   if (nearbyMines > 0) return;
