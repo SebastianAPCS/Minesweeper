@@ -137,7 +137,7 @@ class Cube {
 }
 
 class Box extends Cube {
-  ArrayList <Quadrilateral> faces = new ArrayList<>();
+  ArrayList<Quadrilateral> faces = new ArrayList<Quadrilateral>();
   int r = 255, g = 255, b = 255; // line color
   int fr = 211, fg = 211, fb = 211; // face color
   int ft = 100; // face transparency
