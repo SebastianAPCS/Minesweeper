@@ -220,6 +220,7 @@ void endGame(boolean hasWon) {
     // textSize(64);
     textFont(createFont("Verdana-Bold", 64)); 
     text("GAME LOST", -200, 0);
+    textFont(createFont("Verdana-Bold", 15));
     
     // if (mousePressed || keyPressed) exit();
   } else if (hasWon) {
